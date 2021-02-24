@@ -1,0 +1,59 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - run: npm install
+
+      - name: Create Build
+        run: npm run build --if-present
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: __sapper__/build
+
+  commit-build:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone the repoitory
+        uses: actions/checkout@v2
+        with:
+          ref: website-build
+
+      - name: Configure Git
+        run: |
+          git config --global user.email ${GITHUB_ACTOR}@gmail.com
+          git config --global user.name ${GITHUB_ACTOR}
+
+      - name: Download website build
+        uses: actions/download-artifact@v1
+        with:
+          name: build
+          path: build
+
+      - name: Commit and Push
+        run: |
+          if [ $(git status --porcelain=v1 2>/dev/null | wc -l) != "0" ] ; then
+            git add -f build
+            git commit -m "gh-actions deployed a new website build"
+            git push --force https://${GITHUB_ACTOR}:@github.com/${GITHUB_REPOSITORY}.git HEAD:website-build
+          fi
