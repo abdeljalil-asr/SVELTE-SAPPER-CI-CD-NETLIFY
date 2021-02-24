@@ -7,7 +7,7 @@
     "build": "sapper build --legacy",
     "export": "sapper export --legacy",
     "start-dev": "node __sapper__/build",
-    "start": "node build"
+    "start": "node __sapper__/build"
   },
   "dependencies": {
     "compression": "^1.7.1",
