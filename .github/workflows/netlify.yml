@@ -25,8 +25,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: build
-          path: __sapper__/build
+          name: public
+          path: __sapper__
 
   commit-build:
     needs: build
@@ -47,13 +47,13 @@ jobs:
       - name: Download website build
         uses: actions/download-artifact@v1
         with:
-          name: build
-          path: build
+          name: public
+          path: public
 
       - name: Commit and Push
         run: |
           if [ $(git status --porcelain=v1 2>/dev/null | wc -l) != "0" ] ; then
-            git add -f build
+            git add -f public
             git commit -m "gh-actions deployed a new website build"
             git push --force https://${GITHUB_ACTOR}:@github.com/${GITHUB_REPOSITORY}.git HEAD:website-build
           fi
