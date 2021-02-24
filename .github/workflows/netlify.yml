@@ -20,13 +20,13 @@ jobs:
       - run: npm install
 
       - name: Create Build
-        run: npm run build --if-present
+        run: npm run export --if-present
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
           name: build
-          path: __sapper__/build
+          path: __sapper__/export
 
   commit-build:
     needs: build
